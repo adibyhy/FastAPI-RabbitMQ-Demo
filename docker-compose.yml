@@ -1,0 +1,42 @@
+version: "3"
+
+services:
+  rabbitmq:
+    container_name: rabbitmq
+    image: "rabbitmq:3.11.8-management-alpine"
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    hostname: rabbitmq
+    networks:
+      - app_network
+    restart: always
+
+  producer:
+    container_name: producer_app
+    build: "producer/"
+    ports:
+      - "80:80"
+    environment:
+      - QUEUENAME=demoq
+    networks:
+      - app_network
+    depends_on:
+      - rabbitmq
+    restart: always
+
+  consumer:
+    container_name: consumer_app
+    build: "consumer/"
+    environment:
+      - QUEUENAME=demoq
+    networks:
+      - app_network
+    depends_on:
+      - rabbitmq
+    restart: always
+
+
+networks:
+  app_network:
+    driver: bridge
