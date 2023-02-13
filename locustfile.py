@@ -46,7 +46,7 @@ class Tester(HttpUser):
 
     @task
     def send_payload(self):
-        data = {
+        payload = {
             "device_id": generate_random_string(4),
             "client_id": generate_random_string(4),
             "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"),
@@ -56,25 +56,13 @@ class Tester(HttpUser):
             }
         }
         headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
-        self.client.post("/api", json=data, headers=headers)
+        self.client.post("/api", json=payload, headers=headers)
 
 
-if __name__ == "__main__":
-    ch = logging.StreamHandler(sys.stdout)
-    # Change level to [10, 20, 30, 40, 50] for different severity,
-    # where 10 is lowest (debug) and 50 is highest (critical)
-    logging.basicConfig(
-        level=20,
-        format="%(asctime)s [%(levelname)s] %(funcName)s: %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-        handlers=[ch]
-    )
-    logging.info(f"Starting test script...")
-
+def start_test():
     url = "http://0.0.0.0/api"
 
     sum_preds = 0
-    start = time.perf_counter()
     for i in range(1000):
         preds = generate_preds()
         payload = {
@@ -89,9 +77,25 @@ if __name__ == "__main__":
         logging.info(f"Request #{i}: Number of preds = {len(preds)}")
         sum_preds += len(preds)
         requests.post(url=url, json=payload)
-    end = time.perf_counter()
-    time_taken = end - start
+
     logging.info(f"Total preds: {sum_preds}")
-    logging.info(f"Time taken: {time_taken} s")
+
+
+if __name__ == "__main__":
+    ch = logging.StreamHandler(sys.stdout)
+    # Change level to [10, 20, 30, 40, 50] for different severity,
+    # where 10 is lowest (debug) and 50 is highest (critical)
+    logging.basicConfig(
+        level=20,
+        format="%(asctime)s [%(levelname)s] %(funcName)s: %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+        handlers=[ch]
+    )
+    logging.info(f"Starting test script...")
+
+    start = time.perf_counter()
+    start_test()
+    end = time.perf_counter()
+    logging.info(f"Time taken: {end - start} seconds")
 
     logging.info("Job's done")
