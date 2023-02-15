@@ -53,7 +53,7 @@ Request body:
 {
   "device_id": "string",
   "client_id": "string",
-  "created_at": "timestamp",
+  "created_at": "%Y-%m-%d %H:%M:%S.%f",
   "data": {
     "license_id": "string",
     "preds": [
